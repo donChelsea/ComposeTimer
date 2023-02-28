@@ -39,12 +39,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.composetimer.ui.theme.Beige
 import com.example.composetimer.ui.theme.ComposeTimerTheme
 import com.example.composetimer.ui.theme.LightBlue
+import com.example.composetimer.ui.theme.LightGrey
 
 class MainActivity : ComponentActivity() {
     private val timerViewModel by viewModels<TimerViewModel>()
@@ -89,21 +92,22 @@ fun TimerApp(timerViewModel: TimerViewModel, modifier: Modifier = Modifier) {
             ) {
                 Text(
                     text = "Countdown Timer",
-                    fontSize = 24.sp,
                     style = typography.h4,
                     color = Color.White,
+                    fontWeight = FontWeight.Bold
                 )
             }
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight(),
+                    .wrapContentHeight()
+                    .padding(top = 20.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
                 Box(Modifier.padding(40.dp), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(
-                        color = Color.Yellow,
+                        color = Beige,
                         modifier = Modifier.size(250.dp),
                         progress = progress.value,
                         strokeWidth = 12.dp
@@ -178,7 +182,7 @@ fun TimerApp(timerViewModel: TimerViewModel, modifier: Modifier = Modifier) {
                         .padding(16.dp)
                         .height(48.dp)
                         .widthIn(min = 48.dp),
-                    backgroundColor = Color.Yellow,
+                    backgroundColor = Beige,
                     contentColor = MaterialTheme.colors.onPrimary
                 ) {
                     AnimatingFabContent(
@@ -186,11 +190,13 @@ fun TimerApp(timerViewModel: TimerViewModel, modifier: Modifier = Modifier) {
                             if (resumed.value != true)
                                 Icon(
                                     imageVector = Icons.Outlined.PlayArrow,
-                                    contentDescription = null
+                                    contentDescription = null,
+                                    tint = Color.Black
                                 ) else
                                 Icon(
                                     imageVector = Icons.Outlined.Pause,
-                                    contentDescription = null
+                                    contentDescription = null,
+                                    tint = Color.Black
                                 )
                         },
                         text = {
@@ -270,7 +276,7 @@ fun OperatorButton(
             onClick = { onClick.invoke(timeOperator) },
             enabled = isEnabled,
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = Color.Gray,
+                backgroundColor = LightGrey,
                 disabledBackgroundColor = MaterialTheme.colors.background
             ),
             elevation = ButtonDefaults.elevation(defaultElevation = 0.dp)
@@ -296,25 +302,25 @@ fun HeaderText(text: String, color: Color) {
     Text(text = text, fontSize = 42.sp, textAlign = TextAlign.Center, style = MaterialTheme.typography.h1, color = color)
 }
 
-//@ExperimentalAnimationApi
-//@Preview(
-//    showBackground = true,
-//    showSystemUi = true
-//)
-//@Composable
-//private fun previewTimer() {
-//    TimerApp(timerViewModel = TimerViewModel())
-//}
-
 @ExperimentalAnimationApi
 @Preview(
-    showBackground = true
+    showBackground = true,
+    showSystemUi = true
 )
 @Composable
-private fun previewTimerComponent() {
-    TimerComponent(
-        value = 0,
-        timeUnit = TimerViewModel.Companion.TimeUnit.SEC,
-        enabled = true,
-    ) {}
+private fun previewTimer() {
+    TimerApp(timerViewModel = TimerViewModel())
 }
+
+//@ExperimentalAnimationApi
+//@Preview(
+//    showBackground = true
+//)
+//@Composable
+//private fun previewTimerComponent() {
+//    TimerComponent(
+//        value = 0,
+//        timeUnit = TimerViewModel.Companion.TimeUnit.SEC,
+//        enabled = true,
+//    ) {}
+//}
