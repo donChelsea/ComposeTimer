@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,15 +38,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.imageResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.composetimer.ui.theme.ComposeTimerTheme
+import com.example.composetimer.ui.theme.LightBlue
 
 class MainActivity : ComponentActivity() {
     private val timerViewModel by viewModels<TimerViewModel>()
@@ -66,7 +63,6 @@ class MainActivity : ComponentActivity() {
 @ExperimentalAnimationApi
 @Composable
 fun TimerApp(timerViewModel: TimerViewModel, modifier: Modifier = Modifier) {
-
     val secs = timerViewModel.seconds.collectAsState()
     val minutes = timerViewModel.minutes.collectAsState()
     val hours = timerViewModel.hours.collectAsState()
@@ -75,11 +71,15 @@ fun TimerApp(timerViewModel: TimerViewModel, modifier: Modifier = Modifier) {
     val progress = timerViewModel.progress.collectAsState(1f)
     val timeShow = timerViewModel.time.collectAsState(initial = "00:00:00")
 
-    Surface(color = Color.Black) {
+    Surface(color = LightBlue) {
         val typography = MaterialTheme.typography
 
-        Column(modifier = Modifier.padding()) {
-            Spacer(modifier = Modifier.height(32.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding()
+        ) {
+            Spacer(modifier = Modifier.height(40.dp))
             Row(
                 modifier = modifier
                     .fillMaxWidth()
@@ -88,11 +88,10 @@ fun TimerApp(timerViewModel: TimerViewModel, modifier: Modifier = Modifier) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Let's start the countdown!",
+                    text = "Countdown Timer",
                     fontSize = 24.sp,
                     style = typography.h4,
                     color = Color.White,
-                    fontStyle = FontStyle.Italic
                 )
             }
 
@@ -110,7 +109,7 @@ fun TimerApp(timerViewModel: TimerViewModel, modifier: Modifier = Modifier) {
                         strokeWidth = 12.dp
                     )
                     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                        ReusableHeaderText(
+                        HeaderText(
                             text = timeShow.value,
                             color = Color.White
                         )
@@ -119,35 +118,6 @@ fun TimerApp(timerViewModel: TimerViewModel, modifier: Modifier = Modifier) {
             }
 
             Spacer(modifier = Modifier.height(12.dp))
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 2.dp, end = 2.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = TimerViewModel.Companion.TimeUnit.HOUR.name,
-                    fontSize = 20.sp,
-                    color = Color.White,
-                    style = typography.caption
-                )
-                Text(
-                    text = TimerViewModel.Companion.TimeUnit.MIN.name,
-                    fontSize = 20.sp,
-                    color = Color.White,
-                    style = typography.caption
-                )
-                Text(
-                    text = TimerViewModel.Companion.TimeUnit.SEC.name,
-                    fontSize = 20.sp,
-                    color = Color.White,
-                    style = typography.caption
-                )
-            }
-
-            Spacer(modifier = Modifier.height(6.dp))
 
             Row(
                 modifier = modifier
@@ -196,7 +166,7 @@ fun TimerApp(timerViewModel: TimerViewModel, modifier: Modifier = Modifier) {
             ) {
                 FloatingActionButton(
                     onClick = {
-                        if (!((secs.value ?: 0) == 0 && (minutes.value ?: 0) == 0 && (hours.value ?: 0) == 0)) {
+                        if (!(secs.value == 0 && minutes.value == 0 && hours.value == 0)) {
                             if (resumed.value != true) {
                                 timerViewModel.startCountDown()
                             } else {
@@ -235,7 +205,6 @@ fun TimerApp(timerViewModel: TimerViewModel, modifier: Modifier = Modifier) {
                                 )
                         },
                         extended = true
-
                     )
                 }
             }
@@ -249,35 +218,38 @@ fun TimerComponent(
     value: Int?,
     timeUnit: TimerViewModel.Companion.TimeUnit,
     enabled: Boolean,
-    onClick: (TimerViewModel.Companion.TimeOperator) -> Unit
+    onClick: (TimerViewModel.Companion.TimeOperator) -> Unit,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        val typography = MaterialTheme.typography
-
-        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = timeUnit.toString(),
+            fontSize = 20.sp,
+            color = Color.White,
+            style = MaterialTheme.typography.caption,
+            modifier = Modifier.padding(top = 8.dp)
+        )
 
         OperatorButton(
             timeOperator = TimerViewModel.Companion.TimeOperator.INCREASE,
             isEnabled = enabled,
-            onClick = onClick
+            onClick = onClick,
+            modifier = Modifier.padding(top = 8.dp)
         )
-
-        Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = String.format("%02d", value ?: 0),
             fontSize = 32.sp,
-            color = Color.White
+            color = Color.White,
+            modifier = Modifier.padding(top = 8.dp)
         )
-
-        Spacer(modifier = Modifier.height(8.dp))
 
         OperatorButton(
             timeOperator = TimerViewModel.Companion.TimeOperator.DECREASE,
             isEnabled = enabled,
-            onClick = onClick
+            onClick = onClick,
+            modifier = Modifier.padding(top = 8.dp)
         )
     }
 }
@@ -287,22 +259,22 @@ fun TimerComponent(
 fun OperatorButton(
     isEnabled: Boolean,
     timeOperator: TimerViewModel.Companion.TimeOperator,
-    onClick: (TimerViewModel.Companion.TimeOperator) -> Unit
+    onClick: (TimerViewModel.Companion.TimeOperator) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
-        visible = isEnabled
+        visible = isEnabled,
+        modifier = modifier,
     ) {
         Button(
             onClick = { onClick.invoke(timeOperator) },
             enabled = isEnabled,
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Color.Gray,
-                //    backgroundColor = MaterialTheme.colors.background,
                 disabledBackgroundColor = MaterialTheme.colors.background
             ),
             elevation = ButtonDefaults.elevation(defaultElevation = 0.dp)
         ) {
-
             when (timeOperator) {
                 TimerViewModel.Companion.TimeOperator.INCREASE -> Icon(
                     Icons.Outlined.ArrowDropUp,
@@ -320,8 +292,29 @@ fun OperatorButton(
 }
 
 @Composable
-fun ReusableHeaderText(text: String, color: Color) {
-    Text(text = text, fontSize= 42.sp, textAlign = TextAlign.Center,style = MaterialTheme.typography.h1, color = color)
+fun HeaderText(text: String, color: Color) {
+    Text(text = text, fontSize = 42.sp, textAlign = TextAlign.Center, style = MaterialTheme.typography.h1, color = color)
 }
 
+//@ExperimentalAnimationApi
+//@Preview(
+//    showBackground = true,
+//    showSystemUi = true
+//)
+//@Composable
+//private fun previewTimer() {
+//    TimerApp(timerViewModel = TimerViewModel())
+//}
 
+@ExperimentalAnimationApi
+@Preview(
+    showBackground = true
+)
+@Composable
+private fun previewTimerComponent() {
+    TimerComponent(
+        value = 0,
+        timeUnit = TimerViewModel.Companion.TimeUnit.SEC,
+        enabled = true,
+    ) {}
+}
